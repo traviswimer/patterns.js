@@ -48,11 +48,70 @@ function patterns(){
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+	// Composite pattern
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function composite(leafClass){
+
+		// If leafClass is invalid/null, throw error
+		if(typeof leafClass !== "function"){
+			throw new Error("leafClass must be a function");
+		}
+
+		// Is used to retrieve pulbic methods/properties
+		var leafObject = new leafClass();
+
+
+		// class for creating composite objects
+		function compositeClass(){
+
+			// Array of composite and leaf objects
+			var children = [];
+
+			// Add public methods from leafObject to allow the call to 
+			// travel down the hierarchy
+			for(var method in leafObject){
+				this[method] = function(){
+					for(var i=0; i<children.length; i++){
+						children[i][method].apply(children[i], arguments);
+					}
+				};
+			}
+
+			this.addComposite = function(){
+				var newCompositeObject = new compositeClass();
+				children.push(newCompositeObject);
+				return newCompositeObject;
+			};
+
+			this.addLeaf = function(){
+
+				// Workaround to allow arbitrary arguments to be provided
+				function F(args) {
+					return leafClass.apply(this, args);
+				}
+				F.prototype = leafClass.prototype;
+
+
+				var newLeafObject = new F(arguments);
+				children.push(newLeafObject);
+				return newLeafObject;
+			};
+
+		}
+
+		// return the initial composite object
+		return new compositeClass();
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
 	// return "pattern" public methods
 	return {
-		factory: factory
+		factory: factory,
+		composite: composite
 	};
 
 }
