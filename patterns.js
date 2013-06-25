@@ -11,12 +11,15 @@
 (function(){
 
 // main function for the library
-function pattern(){
+function patterns(){
 
 	// Factory pattern
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 
 	function factory(defaultClass){
+
+		// If defaultClass is invalid/null, use empty class
+		defaultClass = typeof defaultClass === "function" ? defaultClass : function(){};
 
 		// returns a factory for building the specified object
 		function build(extendingClass){
@@ -55,6 +58,6 @@ function pattern(){
 }
 
 // attach the pattern methods to a global object
-window.pattern = pattern();
+window.patterns = patterns();
 
 }());
